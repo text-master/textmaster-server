@@ -6,25 +6,22 @@ const retext = require('retext');
 const keywords = require('retext-keywords');
 const nlcstToString = require('nlcst-to-string');
 const { connect, connection } = require('./connection');
+const DbConnection = require('./db-connection');
 
 server.listen(3000, () => {
   console.log('listening on *:3000');
 });
 
 io.on('connection', async function(socket) {
-  const db = await connect();
-
-  console.log('database connected');
+  const db = await DbConnection.get();
   console.log('a user connected');
 
   socket.on('disconnect', function() {
-    db.close();
+    // db.close();
     console.log('user disconnected');
   });
 
   socket.on('suggestion', function(data) {
-    console.log(data);
-
     var { topic, prefix } = data;
 
     let regex = {
