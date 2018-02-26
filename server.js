@@ -5,7 +5,6 @@ const htmlToText = require('html-to-text');
 const retext = require('retext');
 const keywords = require('retext-keywords');
 const nlcstToString = require('nlcst-to-string');
-const { connect, connection } = require('./connection');
 const DbConnection = require('./db-connection');
 const PORT = process.env.PORT || 3000
 
