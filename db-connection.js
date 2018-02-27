@@ -1,12 +1,12 @@
 const { MongoClient } = require('mongodb');
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/vocabulary';
+const url = 'mongodb://localhost:27017/vocabulary';
 
 const DbConnection = () => {
   let db = null;
 
   async function connect() {
     try {
-      let _db = await MongoClient.connect(MONGODB_URI);
+      let _db = await MongoClient.connect(url);
       return _db;
     } catch (e) {
       return e;
