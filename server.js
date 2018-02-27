@@ -12,6 +12,9 @@ server.listen(PORT, () => {
   console.log(`Listening on ${PORT}`);
 });
 
+//cors
+io.set('origins', '*:*');
+
 io.on('connection', async function(socket) {
   const db = await DbConnection.get();
   console.log('a user connected');
