@@ -1,6 +1,5 @@
-const app = require('express')();
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const server = require('http').createServer();
+const io = require('socket.io')(server);
 const SummaryTool = require('./summary');
 const htmlToText = require('html-to-text');
 const retext = require('retext');
@@ -9,20 +8,12 @@ const nlcstToString = require('nlcst-to-string');
 const DbConnection = require('./db-connection');
 const PORT = process.env.PORT || 3000;
 
-app.get('/', function(req, res) {
-  res.send('<h1>Hello world</h1>');
-});
-
-http.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Listening on ${PORT}`);
 });
 
-//cors
-io.set('origins', '*:*');
-
 io.on('connection', async function(socket) {
   const db = await DbConnection.get();
-
   console.log('a user connected');
 
   socket.on('disconnect', function() {
