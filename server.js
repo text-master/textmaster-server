@@ -1,5 +1,6 @@
-const server = require('http').createServer(cors);
-const io = require('socket.io')(server);
+const app = require('express')();
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 const SummaryTool = require('./summary');
 const htmlToText = require('html-to-text');
 const retext = require('retext');
@@ -8,24 +9,16 @@ const nlcstToString = require('nlcst-to-string');
 const DbConnection = require('./db-connection');
 const PORT = process.env.PORT || 3000;
 
-server.listen(PORT, () => {
+app.get('/', function(req, res) {
+  res.send('<h1>Hello world</h1>');
+});
+
+http.listen(PORT, () => {
   console.log(`Listening on ${PORT}`);
 });
 
 //cors
 io.set('origins', '*:*');
-const cors = function(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Request-Method', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-  res.setHeader('Access-Control-Allow-Headers', '*');
-  if (req.method === 'OPTIONS') {
-    res.writeHead(200);
-    res.end();
-    return;
-  }
-};
 
 io.on('connection', async function(socket) {
   const db = await DbConnection.get();
