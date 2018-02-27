@@ -22,6 +22,7 @@ io.set('origins', '*:*');
 
 io.on('connection', async function(socket) {
   const db = await DbConnection.get();
+
   console.log('a user connected');
 
   socket.on('disconnect', function() {
