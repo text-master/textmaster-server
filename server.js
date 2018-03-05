@@ -2,10 +2,8 @@ const server = require('http').createServer();
 const io = require('socket.io')(server);
 const SummaryTool = require('./summary');
 const htmlToText = require('html-to-text');
-const retext = require('retext');
-const keywords = require('retext-keywords');
-const nlcstToString = require('nlcst-to-string');
 const DbConnection = require('./db-connection');
+const extractKeywords = require('./keyword-extraction');
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
@@ -22,13 +20,13 @@ io.on('connection', async function(socket) {
   });
 
   socket.on('suggestion', function(data) {
-    var { topic, prefix } = data;
+    const { topic, prefix } = data;
 
-    let regex = {
+    const regex = {
       $regex: new RegExp('^' + prefix),
     };
 
-    var cursor = db
+    const cursor = db
       .collection(topic)
       .find({
         Word: regex,
@@ -45,9 +43,9 @@ io.on('connection', async function(socket) {
 
   socket.on('follower', function(data) {
     console.log(data);
-    var { topic, preword } = data;
+    const { topic, preword } = data;
 
-    var cursor = db.collection(topic).find({
+    const cursor = db.collection(topic).find({
       Word: preword,
     });
 
@@ -56,33 +54,24 @@ io.on('connection', async function(socket) {
     });
   });
 
-  socket.on('summarize', function(html) {
-    var content = htmlToText.fromString(html, {
+  socket.on('summarize', async function(html) {
+    const content = htmlToText.fromString(html, {
       ignoreHref: true,
+      ignoreImage: true,
     });
-    // console.log(content);
-    // console.log(JSON.stringify(content));
-    var keyWords;
 
-    retext()
-      .use(keywords)
-      .process(content, function(err, file) {
-        if (err) throw err;
-        keyWords = file.data.keyphrases.map(function(phrase) {
-          return phrase.matches[0].nodes.map(nlcstToString).join('');
-        });
-      });
+    const keywords = await extractKeywords(content);
 
     SummaryTool.summarize('', content, function(err, summary) {
       if (err) console.log('Something went wrong man!');
 
       // console.log(summary);
-      var data = {
+      const data = {
         summary: summary,
         contentLength: content.length,
         summaryLength: summary.length,
         summaryRatio: 100 - 100 * (summary.length / content.length),
-        keyWords: keyWords,
+        keywords: keywords,
       };
       socket.emit('summarize', data);
     });
