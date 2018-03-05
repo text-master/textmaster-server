@@ -59,9 +59,9 @@ io.on('connection', async function(socket) {
   socket.on('summarize', function(html) {
     var content = htmlToText.fromString(html, {
       ignoreHref: true,
+      ignoreImage: true,
     });
-    // console.log(content);
-    // console.log(JSON.stringify(content));
+
     var keyWords;
 
     retext()
