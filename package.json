@@ -17,7 +17,8 @@
     "retext": "^5.0.0",
     "retext-keywords": "^4.0.1",
     "sbd": "^1.0.12",
-    "socket.io": "^2.0.3"
+    "socket.io": "^2.0.3",
+    "socket.io-request": "^0.8.0"
   },
   "devDependencies": {
     "nodemon": "^1.15.1"
